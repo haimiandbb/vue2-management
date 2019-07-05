@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import App from './App';
 import Index from './views/index/index';
 import Table from './views/table/table';
+import TableC from './views/table/table-copy';
 import Form from './views/form/form';
 import ue from './views/editor/editor';
 import 'font-awesome/css/font-awesome.min.css';
@@ -51,7 +52,8 @@ let routes = [
       {path: '/index', component: Index, name: 'index', class: 'fa-line-chart'},
       {path: '/table', component: Table, name: 'table', class: 'fa-table'},
       {path: '/form', component: Form, name: 'form', class: 'fa-newspaper-o'},
-      {path: '/editor', component: ue, name: 'editor', class: 'fa-plug'}
+      {path: '/editor', component: ue, name: 'editor', class: 'fa-plug'},
+      {path: '/tableC', component: TableC, name: 'la', class: 'fa-table'},
     ]
   }
 ];
