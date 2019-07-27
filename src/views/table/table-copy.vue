@@ -4,8 +4,8 @@
       <el-col :span="24">
         <!--表单-->
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
-          <el-form-item label="姓名">
-            <el-input v-model="formInline.user.name" placeholder="姓名" style="width: 140px;"></el-input>
+          <el-form-item label="商品名称">
+            <el-input v-model="formInline.user.name" placeholder="Pine Green/Black/Sail" style="width: 140px;"></el-input>
           </el-form-item>
           <el-form-item label="年份">
             <el-date-picker
@@ -149,6 +149,8 @@
           }
         },
         tableData: [],
+        originTableData: [],
+        queryTableData: [],
         options: [],
         places: [],
         dialogFormVisible: false,
@@ -188,7 +190,7 @@
       this.$http.post('http://mf.dc.test.cn/services/mf/test/test', body).then((response) => {
         response = response.data;
         if (response.data.err.errNo === ERR_OK) {
-          this.tableData = response.data.goods;
+          this.originTableData = this.tableData = response.data.goods;
         }
       });
       this.$http.get('/api/getOptions').then((response) => {
@@ -201,7 +203,20 @@
     },
     methods: {
       onSubmit () {
-        this.$message('模拟数据，这个方法并不管用哦~');
+        if (this.formInline.user.name === ''){
+          this.tableData = this.originTableData;
+          return
+        } else {
+          for (var i = 0; i < this.tableData.length; i++) {
+            var item = this.tableData[i];
+            if (item.mName === this.formInline.user.name){
+              this.queryTableData.push(item)
+            }
+          }
+          this.tableData = this.queryTableData;
+        }
+        this.formInline.user.name = '';
+        // this.$message('模拟数据，这个方法并不管用哦~');
       },
       handleDelete (index, row) {
         this.tableData.splice(index, 1);
