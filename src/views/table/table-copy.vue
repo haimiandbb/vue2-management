@@ -7,6 +7,9 @@
           <el-form-item label="商品名称">
             <el-input v-model="formInline.user.name" placeholder="Pine Green/Black/Sail" style="width: 140px;"></el-input>
           </el-form-item>
+          <el-form-item label="提醒状态">
+            <el-input v-model="formInline.user.alertStatus" placeholder="1" style="width: 140px;"></el-input>
+          </el-form-item>
           <el-form-item label="年份">
             <el-date-picker
               v-model="formInline.user.date"
@@ -59,7 +62,7 @@
             width="100">
           </el-table-column>
           <el-table-column
-            prop="mName"
+            prop="mname"
             label="商品名"
             width="140">
           </el-table-column>
@@ -111,7 +114,7 @@
         </div>
       </el-col>
     </el-row>
-    <el-dialog title="修改个人信息" :visible="dialogFormVisible" size="tiny">
+    <el-dialog title="修改提醒信息" :visible="dialogFormVisible" size="tiny">
       <el-form ref="goods" :model="goods" label-width="80px">
         <el-form-item label="提醒方式" prop="way">
           <el-checkbox-group v-model="checkedSize">
@@ -143,6 +146,7 @@
         formInline: {
           user: {
             name: '',
+            alertStatus: '',
             date: '',
             address: [],
             place: ''
@@ -166,7 +170,7 @@
           id: '',
           img: '',
           inventoryStatus: '',
-          mName: '',
+          mname: '',
           mid: '',
           rmb: '',
           size: '',
@@ -187,9 +191,9 @@
         "timestamp": 1486975919,
         "orderId": 164397097
       };
-      this.$http.post('http://mf.dc.test.cn/services/mf/test/test', body).then((response) => {
+      this.$http.post('http://106.54.189.47:8085/beyond/queryFavorites', body).then((response) => {
         response = response.data;
-        if (response.data.err.errNo === ERR_OK) {
+        if (response.errorCode === ERR_OK) {
           this.originTableData = this.tableData = response.data.goods;
         }
       });
@@ -203,19 +207,23 @@
     },
     methods: {
       onSubmit () {
-        if (this.formInline.user.name === ''){
+        this.queryTableData = [];
+        if (this.formInline.user.name === '' && this.formInline.user.alertStatus === ''){
           this.tableData = this.originTableData;
           return
         } else {
           for (var i = 0; i < this.tableData.length; i++) {
             var item = this.tableData[i];
-            if (item.mName === this.formInline.user.name){
+            if (item.mname === this.formInline.user.name){
+              this.queryTableData.push(item)
+            } else if (item.isAlter + '' === this.formInline.user.alertStatus){
               this.queryTableData.push(item)
             }
           }
           this.tableData = this.queryTableData;
         }
         this.formInline.user.name = '';
+        this.formInline.user.alertStatus = '';
         // this.$message('模拟数据，这个方法并不管用哦~');
       },
       handleDelete (index, row) {
@@ -225,9 +233,9 @@
           type: 'success'
         });
         console.log(row);
-        this.$http.post('http://mf.dc.test.cn/services/mf/by/deleteMp', row).then((response) => {
+        this.$http.post('http://106.54.189.47:8085/beyond/deleteMp', row).then((response) => {
           response = response.data;
-          if (response.data.err.errNo === ERR_OK) {
+          if (response.data.err.errorCode === ERR_OK) {
             this.tableData = response.data.goods;
           }
         });
@@ -251,9 +259,9 @@
           var update = this.goods;
           update.saleSize = this.checkedSize;
           console.log(update);
-          this.$http.post('http://mf.dc.test.cn/services/mf/by/alertMp', update).then((response) => {
+          this.$http.post('http://106.54.189.47:8085/beyond/alertMp', update).then((response) => {
             response = response.data;
-            if (response.data.err.errNo === ERR_OK) {
+            if (response.data.err.errorCode === ERR_OK) {
               this.tableData = response.data.goods;
             }
           });
