@@ -121,12 +121,25 @@
             <el-checkbox v-for="(item, index) in goods.allSize"  :key="index" :label="item" >{{item}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="姓名">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
+
+        <el-form-item label="是否流行" prop="type">
+            <el-radio-group  v-model="goods.isPopular">
+              <el-radio  :label="0">否</el-radio>
+              <el-radio  :label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="模式" prop="type">
+            <el-radio-group  v-model="goods.mode">
+              <el-radio  :label="1">库存模式</el-radio>
+              <el-radio  :label="2">促销模式</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
         <el-form-item label="地址">
           <el-input v-model="form.address"></el-input>
         </el-form-item>
+
         <el-form-item label="出生日期">
           <el-date-picker type="date" placeholder="选择日期" v-model="form.date" style="width: 100%;" ></el-date-picker>
         </el-form-item>
@@ -174,6 +187,8 @@
           mid: '',
           rmb: '',
           size: '',
+          mode: '',
+          isPopular: '',
         },
         checkedSize: [],
         currentPage: 4,
@@ -191,7 +206,7 @@
         "timestamp": 1486975919,
         "orderId": 164397097
       };
-      this.$http.post('http://106.54.189.47:8085/beyond/queryFavorites', body).then((response) => {
+      this.$http.post('http://106.54.189.47:8088/by/beyond/queryFavorites', body).then((response) => {
         response = response.data;
         if (response.errorCode === ERR_OK) {
           this.originTableData = this.tableData = response.data.goods;
@@ -233,7 +248,7 @@
           type: 'success'
         });
         console.log(row);
-        this.$http.post('http://106.54.189.47:8085/beyond/deleteMp', row).then((response) => {
+        this.$http.post('http://106.54.189.47:8088/by/beyond/deleteMp', row).then((response) => {
           response = response.data;
           if (response.data.err.errorCode === ERR_OK) {
             this.tableData = response.data.goods;
@@ -259,8 +274,9 @@
           var update = this.goods;
           update.saleSize = this.checkedSize;
           console.log(update);
-          this.$http.post('http://106.54.189.47:8085/beyond/alertMp', update).then((response) => {
+          this.$http.post('http://106.54.189.47:8088/by/beyond/alertMp', update).then((response) => {
             response = response.data;
+            this.checkedSize = [];
             if (response.data.err.errorCode === ERR_OK) {
               this.tableData = response.data.goods;
             }
